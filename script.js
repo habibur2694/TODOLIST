@@ -1,76 +1,78 @@
 function addTask() {
-  const title = document.getElementById("taskTitle").value.trim();
-  const desc = document.getElementById("taskDesc").value.trim();
+  const titleInput = document.getElementById("task-title");
+  const descInput = document.getElementById("task-desc");
+  const title = titleInput.value.trim();
+  const desc = descInput.value.trim();
 
   if (!title) {
-    alert("Task title is required!");
+    alert("Please enter a task title.");
     return;
   }
 
+  const taskList = document.getElementById("task-list");
+
   const li = document.createElement("li");
-  li.className = "task";
+  li.className = "task-item";
 
-  const titleEl = document.createElement("h3");
-  titleEl.textContent = title;
+  const detailsDiv = document.createElement("div");
+  detailsDiv.className = "task-details";
+  detailsDiv.innerHTML = `<div class="task-title">${title}</div>
+                          <div class="task-desc">${desc}</div>`;
 
-  const descEl = document.createElement("p");
-  descEl.textContent = desc;
+  const actionDiv = document.createElement("div");
+  actionDiv.className = "task-actions";
 
-  const actions = document.createElement("div");
-  actions.className = "task-actions";
-
+  // Complete icon (circle / check-circle)
   const completeBtn = document.createElement("button");
   completeBtn.className = "complete-btn";
-  completeBtn.textContent = "Complete";
-  completeBtn.onclick = () => li.classList.toggle("completed");
+  completeBtn.title = "Mark as complete";
+  completeBtn.innerHTML = `<i class="fa-regular fa-circle"></i>`;
 
-  const editBtn = document.createElement("button");
-  editBtn.className = "edit-btn";
-  editBtn.textContent = "Edit";
-  editBtn.onclick = () => editTask(li, titleEl, descEl);
-
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "delete-btn";
-  deleteBtn.textContent = "Delete";
-  deleteBtn.onclick = () => li.remove();
-
-  actions.appendChild(completeBtn);
-  actions.appendChild(editBtn);
-  actions.appendChild(deleteBtn);
-
-  li.appendChild(titleEl);
-  li.appendChild(descEl);
-  li.appendChild(actions);
-
-  document.getElementById("taskList").appendChild(li);
-
-  document.getElementById("taskTitle").value = "";
-  document.getElementById("taskDesc").value = "";
-}
-
-function editTask(taskEl, titleEl, descEl) {
-  const currentTitle = titleEl.textContent;
-  const currentDesc = descEl.textContent;
-
-  const titleInput = document.createElement("input");
-  titleInput.value = currentTitle;
-
-  const descInput = document.createElement("textarea");
-  descInput.value = currentDesc;
-
-  const saveBtn = document.createElement("button");
-  saveBtn.textContent = "Save";
-  saveBtn.className = "complete-btn";
-  saveBtn.onclick = () => {
-    titleEl.textContent = titleInput.value;
-    descEl.textContent = descInput.value;
-    taskEl.replaceChild(titleEl, titleInput);
-    taskEl.replaceChild(descEl, descInput);
-    taskEl.querySelector(".task-actions").replaceChild(editBtn, saveBtn);
+  completeBtn.onclick = () => {
+    li.classList.toggle("completed");
+    if (li.classList.contains("completed")) {
+      completeBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+    } else {
+      completeBtn.innerHTML = `<i class="fa-regular fa-circle"></i>`;
+    }
   };
 
-  const editBtn = taskEl.querySelector(".edit-btn");
-  taskEl.replaceChild(titleInput, titleEl);
-  taskEl.replaceChild(descInput, descEl);
-  taskEl.querySelector(".task-actions").replaceChild(saveBtn, editBtn);
+  // Edit icon (pen)
+  const editBtn = document.createElement("button");
+  editBtn.className = "edit-btn";
+  editBtn.title = "Edit task";
+  editBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
+
+  editBtn.onclick = () => {
+    const newTitle = prompt("Edit task title:", title);
+    const newDesc = prompt("Edit description:", desc);
+    if (newTitle !== null && newTitle.trim() !== "") {
+      detailsDiv.querySelector(".task-title").textContent = newTitle.trim();
+    }
+    if (newDesc !== null) {
+      detailsDiv.querySelector(".task-desc").textContent = newDesc.trim();
+    }
+  };
+
+  // Delete icon (trash)
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-btn";
+  deleteBtn.title = "Delete task";
+  deleteBtn.innerHTML = `<i class="fa-solid fa-trash"></i>`;
+
+  deleteBtn.onclick = () => {
+    taskList.removeChild(li);
+  };
+
+  actionDiv.appendChild(completeBtn);
+  actionDiv.appendChild(editBtn);
+  actionDiv.appendChild(deleteBtn);
+
+  li.appendChild(detailsDiv);
+  li.appendChild(actionDiv);
+  taskList.appendChild(li);
+
+  // Clear inputs
+  titleInput.value = "";
+  descInput.value = "";
 }
